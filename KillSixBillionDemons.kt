@@ -13,7 +13,7 @@ class KillSixBillionDemons : ParsedHttpSource() {
 
     override val name = "Kill Six Billion Demons"
 
-    override val baseUrl = "https://killsixbilliondemons.com"
+    override val baseUrl = "https://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1"
 
     override val lang = "en"
 
@@ -50,12 +50,12 @@ class KillSixBillionDemons : ParsedHttpSource() {
 //        }
 //    }
 
-    override fun chapterListSelector() = ".level-0"
+    override fun chapterListSelector() = "#comic a"
 
     override fun chapterFromElement(element: Element): SChapter {
         val chapter = SChapter.create()
-        chapter.name = element.text()
-        chapter.url = "/chapter/" + element.attr("value").split("/")[4]
+        chapter.name = element.attr("title")
+        chapter.url = ""//"/chapter/" + element.attr("value").split("/")[4]
         return chapter
     }
 
@@ -72,9 +72,15 @@ class KillSixBillionDemons : ParsedHttpSource() {
 //            pages.addAll(pageListParse(nextPage))
 //        }
         // "wp-post-image"
+        /*
         val img = document.select(".comic-thumbnail-in-archive a img").attr("srcset").split(" ")[0]
         val pages = mutableListOf<Page>()
         pages.add(Page(0, img, img))
+        return pages
+        */
+        val img = document.select("#comic a img").attr("src")
+        val pages = mutableListOf<Page>()
+        pages.add(Page(0, "", img))
         return pages
     }
 

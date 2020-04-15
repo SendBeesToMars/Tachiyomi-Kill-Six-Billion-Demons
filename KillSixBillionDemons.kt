@@ -13,7 +13,7 @@ class KillSixBillionDemons : ParsedHttpSource() {
 
     override val name = "Kill Six Billion Demons"
 
-    override val baseUrl = "https://killsixbilliondemons.com/comic/kill-six-billion-demons-chapter-1"
+    override val baseUrl = "https://killsixbilliondemons.com/wp-content/uploads/2020/"
 
     override val lang = "en"
 
@@ -50,12 +50,12 @@ class KillSixBillionDemons : ParsedHttpSource() {
 //        }
 //    }
 
-    override fun chapterListSelector() = "#comic a"
+    override fun chapterListSelector() = "tbody tr td a:not([href^='/'])"
 
     override fun chapterFromElement(element: Element): SChapter {
         val chapter = SChapter.create()
-        chapter.name = element.attr("title")
-        chapter.url = ""//"/chapter/" + element.attr("value").split("/")[4]
+        chapter.name = element.text()
+        chapter.url = element.attr("href")
         return chapter
     }
 
@@ -78,9 +78,20 @@ class KillSixBillionDemons : ParsedHttpSource() {
         pages.add(Page(0, img, img))
         return pages
         */
-        val img = document.select("#comic a img").attr("src")
+
+
+//        val img = document.baseUri() + document.select("tbody tr td a[href$='.jpg']").attr("href")
+//        val pages = mutableListOf<Page>()
+//        pages.add(Page(0, "", img))
+//        val next = document.select(".comic-nav-previous").attr("href")
+//        val nextPage = Jsoup.connect(next).get()
+//        pages.addAll(pageListParse(nextPage))
+//        return pages
         val pages = mutableListOf<Page>()
-        pages.add(Page(0, "", img))
+
+        document.select("tbody tr td a[href$='.jpg']").forEachIndexed { i, img ->
+            pages.add(Page(i, "", document.baseUri() + img.attr("href")))
+        }
         return pages
     }
 
